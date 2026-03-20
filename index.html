@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Gold Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background-color: #fff8dc;
+        }
+
+        .box {
+            margin-top: 50px;
+            padding: 20px;
+            border: 2px solid gold;
+            display: inline-block;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        input {
+            padding: 8px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: gold;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: orange;
+        }
+
+        h1 {
+            color: goldenrod;
+        }
+
+        h3 {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+        <h1>Gold Price Calculator 🪙</h1>
+
+        <!-- Live Gold Price -->
+        <h3 id="todayPrice">Loading live gold price...</h3>
+
+        <input type="number" id="rate" placeholder="Gold rate per gram (₹)">
+        <br>
+
+        <input type="number" id="weight" placeholder="Weight in grams">
+        <br>
+
+        <button onclick="calculate()">Calculate</button>
+
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+        function calculate() {
+            let rate = parseFloat(document.getElementById("rate").value);
+            let weight = parseFloat(document.getElementById("weight").value);
+
+            if (isNaN(rate) || isNaN(weight)) {
+                alert("Please enter valid values");
+                return;
+            }
+
+            let total = rate * weight;
+
+            document.getElementById("result").innerText =
+                "Total Price: ₹ " + total.toFixed(2);
+        }
+
+        async function getGoldPrice() {
+            try {
+                let response = await fetch("https://api.gold-api.com/price/XAU");
+                let data = await response.json();
+
+                let priceUSD = data.price;
+
+                let priceINR = priceUSD * 83;
+                let perGram = priceINR / 31.1;
+
+                document.getElementById("todayPrice").innerText =
+                    "Live Gold Price: ₹ " + perGram.toFixed(2) + " / gram";
+
+                document.getElementById("rate").value = perGram.toFixed(2);
+
+            } catch (error) {
+                document.getElementById("todayPrice").innerText =
+                    "Error loading live price";
+            }
+        }
+
+        getGoldPrice();
+    </script>
+
+</body>
+</html>
